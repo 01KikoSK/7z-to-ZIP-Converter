@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>7z to ZIP Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>7z to ZIP Converter</h1>
+        <input type="file" id="fileInput" accept=".7z,.zip">
+        <button onclick="convertFile()">Convert File</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        function convertFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const messageDiv = document.getElementById('message');
+
+            if (file) {
+                const is7z = file.name.endsWith('.7z');
+                const isZip = file.name.endsWith('.zip');
+
+                if (is7z || isZip) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const arrayBuffer = e.target.result;
+                        const newName = is7z ? file.name.replace('.7z', '.zip') : file.name.replace('.zip', '.7z');
+                        const blob = new Blob([arrayBuffer], { type: is7z ? 'application/zip' : 'application/x-7z-compressed' });
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = newName;
+                        link.click();
+                        
+                        messageDiv.textContent = 'File successfully converted and downloaded as ' + newName;
+                        messageDiv.className = 'message success';
+                    };
+
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    messageDiv.textContent = 'Please select a valid .7z or .zip file.';
+                    messageDiv.className = 'message error';
+                }
+            } else {
+                messageDiv.textContent = 'Please select a file.';
+                messageDiv.className = 'message error';
+            }
+        }
+    </script>
+</body>
+</html>
